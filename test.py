@@ -7,6 +7,12 @@ import fileinput, os, sys
 from subprocess import Popen, PIPE, STDOUT
 import subprocess
 
+def replaceIf(old, new, condition=True):
+	if condition: 
+	   for line in fileinput.FileInput("Vagrantfile",inplace=1):
+	      line = line.replace(old, new)
+	      print (line, end='')
+
 def start(provider=None):
 	"""Starts the specified machine using vagrant"""
 	info("Creating new Vagrant cell...")
@@ -15,18 +21,14 @@ def start(provider=None):
 	info("Initializing Vagrant cell...")
 	v.init("raring64")
 	info("Modifying Vagrantfile...")
-	if provider == "kvm": 
-	   for line in fileinput.FileInput("Vagrantfile",inplace=1):
-	      line = line.replace("# config.vm.network :pri","config.vm.network :pri")
-	      print (line, end='')
+	replaceIf("# config.vm.network :pri", "config.vm.network :pri", provider == "kvm")
 	info("Booting up cell...")
 	v.up(provider)
 	info("Finalizing new cell...")
 	if provider != "kvm":
-	   env.hosts = [v.user_hostname_port()]
+	   env.host_string = v.user_hostname()
     	   env.key_filename = v.keyfile()
     	   env.disable_known_hosts = True
-	   run("successful ssh")
 
 l = logging.getLogger()
 l.setLevel('DEBUG')

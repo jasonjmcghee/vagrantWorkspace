@@ -1,7 +1,4 @@
 class init {
-	exec { 'apt-get update':
-  		command => '/usr/bin/sudo /usr/bin/apt-get update'
-	}
 	package { 'lxc': 
 		ensure => "installed",
 		require => Exec['apt-get update'],
@@ -45,15 +42,16 @@ class vagrant {
     		provider => pip,
 	}
 
-	package { 'python-vagrant':
-                ensure => '0.3.1',
-                provider => 'pip',
+	exec { 'python-vagrant':
+		cwd	=> "/vagrant/python-vagrant/",
+		command => "/usr/bin/python setup.py install",
+		require => Exec['install-vagrant-lxc'],
         }
 
 	file { 'test.py':
 		path => '/home/vagrant/test.py',
 		ensure => file,
-		source => "/vagrant/test.py"
+		source => "/vagrant/test.py",
 	}
 	
 	file { 'clean.py':
@@ -62,25 +60,23 @@ class vagrant {
 		source => "/vagrant/clean.py"
 	}
 
-	file { "/home/vagrant/.vagrant.d/boxes":
-  		source => "/home/elvis/.vagrant.d/boxes",
-  		recurse => true,
-		require => Package['vagrant']
-	}
-
 	exec { 'install-vagrant-lxc':
 		command => '/usr/bin/vagrant plugin install vagrant-lxc', 
-		require => Package['vagrant']
+		require => Exec['fix-vagrant-home'],
+	}
+
+	exec { 'fix-vagrant-home':
+		command => "/bin/echo 'export VAGRANT_HOME=/home/vagrant/.host.vagrant.d' >> /home/vagrant/.profile",
+		require => Package['vagrant'],
 	}
 
 	exec { 'setup-env':
-		command => '/usr/bin/python /home/vagrant/test.py lxc',
-    		path    => "/usr/bin/:/bin/",
-		require => Package[python-vagrant]
+		command => '/usr/bin/python test.py lxc',
+		cwd	=> "/home/vagrant/",
+		require => Exec['install-vagrant-lxc'],
 	}
 }
 
-include lxc
-include git
+include init
 include python
 include vagrant
