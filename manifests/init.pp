@@ -73,7 +73,7 @@ class vagrant {
 	exec { 'setup-env':
 		command => '/usr/bin/python test.py lxc',
 		cwd	=> "/home/vagrant/",
-		require => Exec['install-vagrant-lxc'],
+		require => Exec['python-vagrant'],
 	}
 }
 
