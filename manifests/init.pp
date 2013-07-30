@@ -1,15 +1,3 @@
-class init {
-	package { 'lxc': 
-		ensure => "installed",
-		require => Exec['apt-get update'],
-	}
-
-	package { 'git':
-		ensure => "installed",
-		require => Exec['apt-get update'],
-	 }
-}
-
 stage { "pre": before => Stage["main"] }
 class python {
     exec { 'apt-get update':
@@ -30,11 +18,27 @@ class python {
 }
 class { "python": stage => "pre" }
 
+class init {
+	package { 'lxc': 
+		ensure => "installed",
+		require => Exec['apt-get update'],
+	}
+
+	package { 'git':
+		ensure => "installed",
+		require => Exec['apt-get update'],
+	 }
+}
+
+
+class { "init": stage => "main" }
+
 class vagrant {
 	package { 'vagrant':
 		provider => dpkg,
 		ensure => installed,
-		source => "/vagrant/vagrant_1.2.3_x86_64.deb"
+		source => "/vagrant/vagrant_1.2.3_x86_64.deb",
+		require => File['start-inside.py']
 	}
 
 	package { "fabric":
@@ -44,22 +48,18 @@ class vagrant {
 
 	exec { 'python-vagrant':
 		cwd	=> "/vagrant/python-vagrant/",
-		command => "/usr/bin/python setup.py install",
+		path => ["/usr/bin/","/usr/sbin/","/bin"],
+		command => "sudo python setup.py install",
 		require => Exec['install-vagrant-lxc'],
         }
 
-	file { 'test.py':
-		path => '/home/vagrant/test.py',
+	file { 'start-inside.py':
+		path => '/home/vagrant/start-inside.py',
 		ensure => file,
-		source => "/vagrant/test.py",
-	}
-	
-	file { 'clean.py':
-		path => '/home/vagrant/clean.py',
-		ensure => file,
-		source => "/vagrant/clean.py"
+		source => "/vagrant/vm-inside/start-inside.py",
 	}
 
+	
 	exec { 'install-vagrant-lxc':
 		command => '/usr/bin/vagrant plugin install vagrant-lxc', 
 		require => Exec['fix-vagrant-home'],
@@ -70,13 +70,36 @@ class vagrant {
 		require => Package['vagrant'],
 	}
 
-	exec { 'setup-env':
-		command => '/usr/bin/python test.py lxc',
-		cwd	=> "/home/vagrant/",
+}
+class { "vagrant": stage => "main" }
+
+stage { "post":  }
+class finish {
+
+	file { '/home/vagrant/.vagrant/':
+		mode => 0777,
+		recurse => true,
+		ensure => directory,
 		require => Exec['python-vagrant'],
 	}
+
+	exec { 'final':
+		command => '/usr/bin/python start-inside.py',
+		cwd	=> "/home/vagrant/",
+	}
+
+	exec { 'final2':
+		path => ["/usr/bin/","/usr/sbin/","/bin"],
+		command => 'python start-inside.py',
+		cwd	=> "/home/vagrant/",
+		require => File['/home/vagrant/.vagrant/'],
+	}
 }
+class { "finish": stage => "post" }
+Stage["main"] -> Stage['post']
+
 
 include init
 include python
 include vagrant
+include finish

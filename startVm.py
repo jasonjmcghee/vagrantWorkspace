@@ -39,14 +39,15 @@ l = logging.getLogger()
 l.setLevel('DEBUG')
 
 def finish():
-   shell_command = "vagrant status | grep 'running (' | awk '{ print $2$3 }'"
+   #shell_command = "vagrant status | grep 'running (' | awk '{ print $2$3 }'"
+   shell_command = "vagrant ssh -c 'python start-inside.py'"
    event = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-   output = event.communicate()
-   if output[0].find("running") != -1: 
-      prvdr = output[0][8:len(output[0])-2]
-      info("Successfully created new " + prvdr + " cell!")
-   else: warn("Something went horribly wrong.")
-   print()
+   #output = event.communicate()
+   #if output[0].find("running") != -1: 
+   #   prvdr = output[0][8:len(output[0])-2]
+   #   info("Successfully created new " + prvdr + " cell!")
+   #else: warn("Something went horribly wrong.")
+   #print()
 
 try:
    if len(sys.argv) > 3:
