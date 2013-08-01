@@ -59,12 +59,6 @@ class vagrant {
 		source => "/vagrant/vm-inside/start-inside.py",
 	}
 
-	file { 'startVm.py':
-		path => '/home/vagrant/startVm.py',
-		ensure => file,
-		source => "/vagrant/startVm.py",
-	}
-
 	file { 'manifests':
 		path => '/home/vagrant/manifests',
 		ensure => directory,
