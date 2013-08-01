@@ -1,0 +1,13 @@
+CHANGELOG.md
+LICENSE.txt
+MANIFEST.in
+README.md
+setup.py
+vagrant.py
+python_vagrant.egg-info/PKG-INFO
+python_vagrant.egg-info/SOURCES.txt
+python_vagrant.egg-info/dependency_links.txt
+python_vagrant.egg-info/top_level.txt
+tests/test_vagrant.py
+tests/vagrantfiles/multivm_Vagrantfile
+tests/vagrantfiles/vm_Vagrantfile
