@@ -84,7 +84,8 @@ class finish {
 	}
 
 	exec { 'final':
-		command => '/usr/bin/python start-inside.py',
+		path => ["/usr/bin/","/usr/sbin/","/bin"],
+		command => 'python start-inside.py',
 		cwd	=> "/home/vagrant/",
 	}
 
