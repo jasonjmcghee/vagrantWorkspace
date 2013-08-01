@@ -1,0 +1,21 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.require_plugin 'vagrant-lxc'
+Vagrant.require_plugin 'vagrant-cachier'
+
+ENV['BOX_NAME'] ||= 'quantal64'
+
+Vagrant.configure("2") do |config|
+  config.vm.box = ENV['BOX_NAME']
+  config.vm.hostname = 'lxc-test-box'
+
+  config.cache.enable :apt
+
+  config.vm.provision :shell,
+    inline: 'mkdir -p /vagrant/tmp && echo -n "Provisioned" > /vagrant/tmp/provisioning'
+
+  config.vm.network :forwarded_port, guest: 80, host: 8080
+  config.vm.provision :shell,
+    inline: 'sudo apt-get install apache2 -y'
+end
