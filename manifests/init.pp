@@ -59,6 +59,19 @@ class vagrant {
 		source => "/vagrant/vm-inside/start-inside.py",
 	}
 
+	file { 'startVm.py':
+		path => '/home/vagrant/startVm.py',
+		ensure => file,
+		source => "/vagrant/startVm.py",
+	}
+
+	file { 'manifests':
+		path => '/home/vagrant/manifests',
+		ensure => directory,
+		recurse => true,
+		source => "/vagrant/vm-inside/manifests",
+	}
+
 	
 	exec { 'install-vagrant-lxc':
 		command => '/usr/bin/vagrant plugin install vagrant-lxc', 
