@@ -46,11 +46,19 @@ class vagrant {
     		provider => pip,
 	}
 
+	file { 'copy-python-vagrant':
+		path => '/home/vagrant/python-vagrant',
+		ensure => directory,
+		recurse => true,
+		source => "/vagrant/python-vagrant",
+		require => Exec['install-vagrant-lxc'],
+	}
+
 	exec { 'python-vagrant':
-		cwd	=> "/vagrant/python-vagrant/",
+		cwd	=> "home/vagrant/python-vagrant/",
 		path => ["/usr/bin/","/usr/sbin/","/bin"],
 		command => "sudo python setup.py install",
-		require => Exec['install-vagrant-lxc'],
+		require => File['copy-python-vagrant'],
         }
 
 	file { 'start-inside.py':
