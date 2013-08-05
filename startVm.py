@@ -13,19 +13,14 @@ def replaceIf(old, new, condition=True):
 	      line = line.replace(old, new)
 	      print (line, end='')
 
-def start(provider=None):
+def start(provider=None, box_name="raring64"):
 	"""Starts the specified machine using vagrant"""
 	info("Creating new Vagrant cell...")
-
 	v = vagrant.Vagrant()
 	info("Initializing Vagrant cell...")
-	v.init("raring64")
-	info("Modifying Vagrantfile...")
-	replaceIf("# config.vm.network :pri", "config.vm.network :pri", provider == "kvm")
-	replaceIf("# config.vm.synced_folder \"../data\", \"/vagrant_data\"\n", "config.vm.synced_folder \"~/.vagrant.d/\", \"/home/vagrant/.host.vagrant.d/\"")
-	replaceIf("# config.vm.provision :puppet do |puppet|", "config.vm.provision :puppet do |puppet|")
-	replaceIf("#   puppet.manifests_path = \"manifests\"", "   puppet.manifests_path = \"manifests\"")
-	replaceIf("#   puppet.manifest_file  = \"init.pp\"", "   puppet.manifest_file = \"init.pp\"\n  end")
+	do("cp vagrant.conf Vagrantfile")
+	info("Customizing Vagrantfile...")
+	replaceIf("raring64", box_name, box_name != "raring64")
 	info("Booting up cell...")
 	v.up(provider)
 	info("Finalizing new cell...")
@@ -38,16 +33,12 @@ def start(provider=None):
 l = logging.getLogger()
 l.setLevel('DEBUG')
 
-def finish():
-   #shell_command = "vagrant status | grep 'running (' | awk '{ print $2$3 }'"
-   shell_command = "vagrant ssh -c 'python start-inside.py'"
-   event = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-   #output = event.communicate()
-   #if output[0].find("running") != -1: 
-   #   prvdr = output[0][8:len(output[0])-2]
-   #   info("Successfully created new " + prvdr + " cell!")
-   #else: warn("Something went horribly wrong.")
-   #print()
+def do(command, debug=False):
+   
+   event = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+   if (debug):
+      output = event.communicate()
+      print()
 
 try:
    if len(sys.argv) > 3:
@@ -64,4 +55,5 @@ except subprocess.CalledProcessError:
    print()
    error('Some bad things are happening...')
 
-finish()
+do("vagrant ssh -c 'python start-inside.py'")
+#do("vagrant status | grep 'running (' | awk '{ print $2$3 }'")
