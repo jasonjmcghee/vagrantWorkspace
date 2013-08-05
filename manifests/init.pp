@@ -55,7 +55,7 @@ class vagrant {
 	}
 
 	exec { 'python-vagrant':
-		cwd	=> "home/vagrant/python-vagrant/",
+		cwd	=> "/home/vagrant/python-vagrant/",
 		path => ["/usr/bin/","/usr/sbin/","/bin"],
 		command => "sudo python setup.py install",
 		require => File['copy-python-vagrant'],
