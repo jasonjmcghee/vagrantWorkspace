@@ -18,5 +18,6 @@ Install pip and fabric:
 
 Add the vagrant boxes we need:
    vagrant box add raring64 http://dl.dropbox.com/u/13510779/lxc-raring-amd64-2013-05-08.box &
+
    vagrant box add raring64 http://cloud-images.ubuntu.com/vagrant/raring/current/raring-server-cloudimg-amd64-vagrant-disk1.box
 
