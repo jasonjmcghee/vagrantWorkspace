@@ -76,7 +76,9 @@ class vagrant {
 
 	
 	exec { 'install-vagrant-lxc':
-		command => '/usr/bin/vagrant plugin install vagrant-lxc', 
+		cwd 	=> '/home/vagrant',
+		path => ["/usr/bin/","/usr/sbin/","/bin"],
+		command => 'vagrant plugin install vagrant-lxc', 
 		require => Exec['fix-vagrant-home'],
 	}
 
@@ -102,13 +104,6 @@ class finish {
 		path => ["/usr/bin/","/usr/sbin/","/bin"],
 		command => 'python start-inside.py',
 		cwd	=> "/home/vagrant/",
-	}
-
-	exec { 'final2':
-		path => ["/usr/bin/","/usr/sbin/","/bin"],
-		command => 'python start-inside.py',
-		cwd	=> "/home/vagrant/",
-		require => File['/home/vagrant/.vagrant/'],
 	}
 }
 class { "finish": stage => "post" }
