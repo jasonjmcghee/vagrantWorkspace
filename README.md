@@ -44,9 +44,11 @@ Add the vagrant boxes we need:
 
 
 Install virtualbox (yeah... it's big. sorry.):
+
 	sudo apt-get install virtualbox
 
 Kernal related errors can _usually be fixed with:
+
 	sudo apt-get install build-essential linux-headers-`uname -r`
 	sudo dpkg-reconfigure virtualbox-dkms 
 	sudo dpkg-reconfigure virtualbox
